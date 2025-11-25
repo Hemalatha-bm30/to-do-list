@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate To-Do List App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2rem;
+        }
+
+        .streak-badge {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .progress-section {
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 8px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .shortcuts-hint {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            color: #856404;
+            text-align: center;
+        }
+
+        .shortcuts-hint strong {
+            color: #667eea;
+        }
+
+        .pomodoro-section {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .pomodoro-timer {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #2d3436;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .pomodoro-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .pomodoro-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .pomodoro-start {
+            background: #00b894;
+            color: white;
+        }
+
+        .pomodoro-pause {
+            background: #fdcb6e;
+            color: #2d3436;
+        }
+
+        .pomodoro-reset {
+            background: #d63031;
+            color: white;
+        }
+
+        .pomodoro-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        #taskInput {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        #taskInput:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        #dateInput, #prioritySelect, #categorySelect {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        #prioritySelect, #categorySelect {
+            cursor: pointer;
+        }
+
+        .important-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        #addBtn {
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background 0.3s, transform 0.1s;
+        }
+
+        #addBtn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        #searchInput {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .filter-btn {
+            padding: 8px 15px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .sort-select {
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .task-list {
+            list-style: none;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .task-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            transition: all 0.3s;
+            animation: slideIn 0.3s ease-out;
+            border-left: 4px solid transparent;
+            cursor: grab;
+        }
+
+        .task-item:active {
+            cursor: grabbing;
+        }
+
+        .task-item.dragging {
+            opacity: 0.5;
+        }
+
+        .task-item.priority-high {
+            border-left-color: #dc3545;
+        }
+
+        .task-item.priority-medium {
+            border-left-color: #ffc107;
+        }
+
+        .task-item.priority-low {
+            border-left-color: #28a745;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .task-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .task-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .task-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .task-text {
+            font-size: 1rem;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .star {
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #ddd;
+        }
+
+        .star.important {
+            color: #ffc107;
+        }
+
+        .task-note {
+            font-size: 0.85rem;
+            color: #666;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 10px;
+            font-size: 0.8rem;
+            color: #666;
+            flex-wrap: wrap;
+        }
+
+        .priority-badge, .category-badge {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .priority-high {
+            background: #ffe5e5;
+            color: #dc3545;
+        }
+
+        .priority-medium {
+            background: #fff8e1;
+            color: #ff9800;
+        }
+
+        .priority-low {
+            background: #e8f5e9;
+            color: #28a745;
+        }
+
+        .category-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .due-date {
+            color: #666;
+        }
+
+        .due-date.overdue {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .edit-btn {
+            background: #ffc107;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #e0a800;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-size: 1.1rem;
+        }
+
+        .task-count {
+            text-align: center;
+            color: #666;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            text-align: center;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .chart-bars {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 150px;
+            gap: 10px;
+        }
+
+        .chart-bar-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chart-bar {
+            width: 100%;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            border-radius: 5px 5px 0 0;
+            transition: height 0.5s ease;
+            position: relative;
+        }
+
+        .chart-value {
+            position: absolute;
+            top: -25px;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .chart-label {
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .stats-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .input-row {
+                flex-direction: column;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .task-actions {
+                flex-direction: column;
+            }
+
+            .pomodoro-timer {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Ultimate To-Do List</h1>
+            <div class="streak-badge">
+                <span>🔥</span>
+                <span id="streakCount">0</span>
+                <span>Day Streak!</span>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-number" id="totalTasks">0</div>
+                <div class="stat-label">Total Tasks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completedToday">0</div>
+                <div class="stat-label">Completed Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="weeklyGoal">0/20</div>
+                <div class="stat-label">Weekly Goal</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="productivity">0%</div>
+                <div class="stat-label">Productivity</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">📊 Last 7 Days Completion</div>
+            <div class="chart-bars" id="chartBars"></div>
+        </div>
+
+        <div class="shortcuts-hint">
+            ⌨️ <strong>Keyboard Shortcuts:</strong> Ctrl+N (New Task) | Ctrl+F (Search) | Ctrl+D (Toggle Dark Mode) | Space (Start/Pause Timer)
+        </div>
+
+        <div class="pomodoro-section">
+            <div>⏰ <strong>Pomodoro Timer</strong></div>
+            <div class="pomodoro-timer" id="pomodoroTimer">25:00</div>
+            <div class="pomodoro-controls">
+                <button class="pomodoro-btn pomodoro-start" id="pomodoroStart">▶ Start</button>
+                <button class="pomodoro-btn pomodoro-pause" id="pomodoroPause">⏸ Pause</button>
+                <button class="pomodoro-btn pomodoro-reset" id="pomodoroReset">🔄 Reset</button>
+            </div>
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">0% Complete</div>
+        </div>
+
+        <div class="input-section">
+            <div class="input-row">
+                <input type="text" id="taskInput" placeholder="Add a new task... (Ctrl+N)" />
+                <button id="addBtn">Add Task</button>
+            </div>
+            <div class="input-group">
+                <input type="date" id="dateInput" />
+                <select id="prioritySelect">
+                    <option value="low">Low Priority</option>
+                    <option value="medium" selected>Medium Priority</option>
+                    <option value="high">High Priority</option>
+                </select>
+                <select id="categorySelect">
+                    <option value="personal">Personal</option>
+                    <option value="work">Work</option>
+                    <option value="shopping">Shopping</option>
+                    <option value="health">Health</option>
+                    <option value="other">Other</option>
+                </select>
+                <label class="important-checkbox">
+                    <input type="checkbox" id="importantCheck" />
+                    <span>⭐ Important</span>
+                </label>
+            </div>
+            <input type="text" id="noteInput" placeholder="Add a note (optional)..." style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+        </div>
+
+        <div class="controls">
+            <input type="text" id="searchInput" placeholder="🔍 Search tasks... (Ctrl+F)" />
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="active">Active</button>
+                <button class="filter-btn" data-filter="completed">Completed</button>
+            </div>
+            <select class="sort-select" id="sortSelect">
+                <option value="date">Sort by Date</option>
+                <option value="priority">Sort by Priority</option>
+                <option value="name">Sort by Name</option>
+                <option value="category">Sort by Category</option>
+            </select>
+        </div>
+
+        <ul class="task-list" id="taskList"></ul>
+        
+        <div class="task-count" id="taskCount"></div>
+    </div>
+
+    <audio id="completeSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZSA0PVqzn8LNlHAU2jdXzzn0pBSh+zPLaizsIGGS57OihUBELTKXh8bllHAU0itHz0YU2Bhxrvu7mnEoODlOq5/KzbBwFN4/T88yAKwUme8rx3I4+CRdjt+zpoVIRC0yn4vG6aB0FMorP8tGFNgYfbsHv45pLDg5TquXys2wdBTiP1PPMgSsGKH3M8tyNPwkaYrfs6aFSEQtMp+LxumgeBTOKz/LRhjYGH27C7+OaTA4PU6vl8rNsHQU4j9Tzz4ErBih9zPLciT8JGmK37OmhUhELTKfi8bpnHgUzis/y0YY2Bh9uwu/jmkwOD1Or5fKzbR0FOI/U88+BKwYofczy3Ik/CRpitu3poVIRC02o4vG6Zx4FM4rP8tGGNgYfbsLv45pMDg9Tq+Xys20dBTiP1PPPgSsGKH3M8tyJPwkaYrbu6aFSEQtNqOLxumceBTOKz/LRhjYGH27C7+OaTQ4PU6vl8rNsHgU4j9Tzz4ErBih9zPLciT8JGmK37uihUhEMTajh8rpoHgY0itDx0YY2Bh9uwu/jmkwOD1Or5fGzbR4FOJDz88+BKwYofczy3Ik/CRpitu3poVMRDE2o4fG6aB4GNIrQ8dGFNgYfbsLv45tMDg9Tq+Xxs20eBTiQ8/PPgSsGKH3M8tyJPwkaYrbt6aFSEQxNqOHxumgeBjSK0PHRhTYGH27C7+ObTA4PU6vl8bNtHgU4kPPzz4ErBih9zPLciT8JGmK27emhUhEMTajh8bpoHgY0itDx0YU2Bh9uwu/jm0wOD1Or5fGzbR4FOJDz88+BKwYofczy3Ik/CRpitu3poVIRC02o4fG6aB4GNIrQ8dGFNgYfbsLv45tMDg9Tq+Xxs20eBTiQ8/PPgSsGKH3M8tyJPwkaYrbt6aFSEQxNqOHxumgeBjSK0PHRhTYGH27C7+ObTA4PU6vl8bNtHgU4kPPzz4ErBih9zPLciT8JGmK27emhUhEMTajh8bpoHgY0itDx0YU2Bh9uwu/jm0wOD1Or5fGzbR4FOJDz88+BKwYofczy3Ik/CRpitu3poVIRC02o4fG6aB4GNIrQ8dGFNgYfbsLv45tMDg9Tq+Xxs20eBTiQ8/PPgSsGKH3M8tyJPwkaYrbt6aFSEQxNqOHxumgeBjSK0PHRhTYGH27C7+ObTA4PU6vl8bNtHgU4kPPzz4ErBih9zPLciT8JGmK27emhUhEMTajh8bpoHgY0itDx0YU2Bh9uwu/jm0wOD1Or5fGzbR4FOJDz88+BKwYofczy3Ik/CRpitu3poVIRC02o4fG6aB4GNIrQ8dGFNgYfbsLv45tMDg9Tq+Xxs20eBTiQ8/PPgSsGKH3M8tyJPwkaYrbt6aFSEQxNqOHxumgeBjSK0PHRhTYGH27C7+ObTA4PU6vl8bNtHgU4kPPzz4ErBih9zPLciT8JGmK27emhUhEMTajh8bpoHgY0itDx0YU2Bh9uwu/jm0wOD1Or5fGzbR4FOJDz88+BKwYofczy" type="audio/wav">
+    </audio>
+
+    <script>
+        let tasks = [];
+        let currentFilter = 'all';
+        let currentSort = 'date';
+        let draggedElement = null;
+        let weeklyStats = [0, 0, 0, 0, 0, 0, 0];
+        
+        // Pomodoro Timer Variables
+        let pomodoroTime = 25 * 60;
+        let pomodoroInterval = null;
+        let pomodoroRunning = false;
+
+        // Streak tracking
+        function updateStreak() {
+            const lastCompletionDate = localStorage.getItem('lastCompletionDate');
+            const today = new Date().toDateString();
+            let streak = parseInt(localStorage.getItem('streak') || '0');
+
+            if (lastCompletionDate === today) {
+                document.getElementById('streakCount').textContent = streak;
+            } else {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                
+                if (lastCompletionDate !== yesterday.toDateString()) {
+                    streak = 0;
+                    localStorage.setItem('streak', '0');
+                }
+                document.getElementById('streakCount').textContent = streak;
+            }
+        }
+
+        function incrementStreak() {
+            const today = new Date().toDateString();
+            const lastCompletionDate = localStorage.getItem('lastCompletionDate');
+            
+            if (lastCompletionDate !== today) {
+                let streak = parseInt(localStorage.getItem('streak') || '0');
+                streak++;
+                localStorage.setItem('streak', streak.toString());
+                localStorage.setItem('lastCompletionDate', today);
+                document.getElementById('streakCount').textContent = streak;
+            }
+        }
+
+        // Sound effect
+        function playCompleteSound() {
+            const sound = document.getElementById('completeSound');
+            sound.play().catch(e => console.log('Audio play failed'));
+        }
+
+        // Pomodoro Timer Functions
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function startPomodoro() {
+            if (!pomodoroRunning) {
+                pomodoroRunning = true;
+                pomodoroInterval = setInterval(() => {
+                    pomodoroTime--;
+                    document.getElementById('pomodoroTimer').textContent = formatTime(pomodoroTime);
+                    
+                    if (pomodoroTime <= 0) {
+                        pausePomodoro();
+                        playCompleteSound();
+                        alert('🎉 Pomodoro completed! Time for a break!');
+                        pomodoroTime = 25 * 60;
+                        document.getElementById('pomodoroTimer').textContent = formatTime(pomodoroTime);
+                    }
+                }, 1000);
+            }
+        }
+
+        function pausePomodoro() {
+            pomodoroRunning = false;
+            clearInterval(pomodoroInterval);
+        }
+
+        function resetPomodoro() {
+            pausePomodoro();
+            pomodoroTime = 25 * 60;
+            document.getElementById('pomodoroTimer').textContent = formatTime(pomodoroTime);
+        }
+
+        // Keyboard Shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'n') {
+                e.preventDefault();
+                document.getElementById('taskInput').focus();
+            }
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+            if (e.key === ' ' && e.target.tagName !== 'INPUT') {
+                e.preventDefault();
+                if (pomodoroRunning) {
+                    pausePomodoro();
+                } else {
+                    startPomodoro();
+                }
+            }
+        });
+
+        // Weekly Stats Chart
+        function updateChart() {
+            const chartBars = document.getElementById('chartBars');
+            const stats = JSON.parse(localStorage.getItem('weeklyStats') || '[0,0,0,0,0,0,0]');
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            
+            const maxValue = Math.max(...stats, 1);
+            
+            chartBars.innerHTML = stats.map((value, index) => `
+                <div class="chart-bar-wrapper">
+                    <div class="chart-bar" style="height: ${(value / maxValue) * 100}%">
+                        <div class="chart-value">${value}</div>
+                    </div>
+                    <div class="chart-label">${days[index]}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateWeeklyStat(completed) {
+            if (completed) {
+                const today = new Date().getDay();
+                const stats = JSON.parse(localStorage.getItem('weeklyStats') || '[0,0,0,0,0,0,0]');
+                stats[today]++;
+                localStorage.setItem('weeklyStats', JSON.stringify(stats));
+                updateChart();
+            }
+        }
+
+        // Stats Update
+        function updateStats() {
+            const total = tasks.length;
+            const completed = tasks.filter(t => t.completed).length;
+            const today = new Date().toDateString();
+            const completedToday = tasks.filter(t => 
+                t.completed && t.completedDate === today
+            ).length;
+            
+            const weeklyStats = JSON.parse(localStorage.getItem('weeklyStats') || '[0,0,0,0,0,0,0]');
+            const weeklyCompleted = weeklyStats.reduce((a, b) => a + b, 0);
+            
+            const productivity = total > 0
