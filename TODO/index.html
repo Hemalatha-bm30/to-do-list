@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Task & Timer</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="app-container">
+    <div class="shortcut-strip">
+        <span>Ctrl+N (New)</span> | <span>Ctrl+F (Search)</span> | <span>Space (Timer)</span>
+    </div>
+
+    <div class="timer-card">
+        <div class="timer-label">⏰ Pomodoro Session</div>
+        <div id="timer-display">25 : 00</div>
+        <div class="timer-controls">
+            <button class="btn btn-start" id="start-btn">▶ Start</button>
+            <button class="btn btn-pause" id="pause-btn">Ⅱ Pause</button>
+            <button class="btn btn-reset" id="reset-btn">🔄 Reset</button>
+        </div>
+    </div>
+
+    <div class="progress-section">
+        <div class="progress-meta">
+            <span id="progress-text">0% Complete</span>
+        </div>
+        <div class="progress-track"><div id="progress-fill"></div></div>
+    </div>
+
+    <div class="input-card">
+        <div class="input-row">
+            <input type="text" id="task-name" placeholder="What needs to be done?">
+            <button class="btn btn-primary" id="add-task-btn">Add Task</button>
+        </div>
+        <div class="input-row secondary">
+            <input type="date" id="task-date">
+            <select id="task-priority">
+                <option value="Low">Low Priority</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High Priority</option>
+            </select>
+            <select id="task-category">
+                <option value="Personal">Personal</option>
+                <option value="Work">Work</option>
+                <option value="Study">Study</option>
+            </select>
+            <label class="star-label">
+                <input type="checkbox" id="task-important"> ⭐ Important
+            </label>
+        </div>
+        <input type="text" id="task-note" placeholder="Add a note (optional)..." class="note-input">
+    </div>
+
+    <div class="action-bar">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search tasks...">
+        </div>
+        <div class="filter-pills">
+            <button class="pill active" data-filter="all">All</button>
+            <button class="pill" data-filter="active">Active</button>
+            <button class="pill" data-filter="completed">Done</button>
+        </div>
+        <button class="btn btn-danger" id="clear-completed-btn">🗑️ Clear Done</button>
+    </div>
+
+    <ul id="task-list" class="task-list"></ul>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
